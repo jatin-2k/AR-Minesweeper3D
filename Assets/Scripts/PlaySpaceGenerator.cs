@@ -15,7 +15,7 @@ public class PlaySpaceGenerator : MonoBehaviour
     public int noiceOffset;
     public bool sphere = false;
 
-    public List<GameObject> Blocks = new List<GameObject>();
+    public MinefieldGraph minefield = new MinefieldGraph();
     #endregion
 
     // Update is called once per frame
@@ -32,11 +32,7 @@ public class PlaySpaceGenerator : MonoBehaviour
     {
         noiseScale = Random.Range(0.01f, 0.5f);
         noiceOffset = Random.Range(0, 10);
-        foreach (GameObject block in Blocks)
-        {
-            Destroy(block);
-        }
-        Blocks.Clear();
+        minefield.Clear(); // clear graph
         Generate();
     }
 
@@ -56,19 +52,19 @@ public class PlaySpaceGenerator : MonoBehaviour
                         if (sphere && Vector3.Distance(new Vector3(x, y, z), Vector3.one * radius) > radius)
                             continue;
 
-                        Blocks.Add(GameObject.Instantiate(blockPrefab, new Vector3(x,y,z),Quaternion.identity,gameObject.transform));
+                        minefield.Add(GameObject.Instantiate(blockPrefab, new Vector3(x,y,z),Quaternion.identity,gameObject.transform)); // add to graph
                     }
                 }
             }
         }
         #endregion
 
-        if(Blocks.Count <= chunkSize * chunkSize * chunkSize / 4)
+        if(minefield.Count <= chunkSize * chunkSize * chunkSize / 4) // count number of nodes in graph
         {
             GeneratePLaySpace();
         }
         else
-            Debug.Log("Loaded in: " + (Time.realtimeSinceStartup - startTime) + " Seconds.");
+            Debug.Log("Loaded in: " + (Time.realtimeSinceStartup - startTime) + " Seconds. " + minefield.Count);
     }
 
 
