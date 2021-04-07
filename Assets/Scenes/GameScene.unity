@@ -235,7 +235,6 @@ MonoBehaviour:
   threshold: 0.5
   noiceOffset: 0
   sphere: 0
-  Blocks: []
 --- !u!1 &679317204
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,7 +800,7 @@ PrefabInstance:
     - target: {fileID: 2009462707321383172, guid: 0f5c8dbe7c51f8340bbef3263e453649,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2009462707321383175, guid: 0f5c8dbe7c51f8340bbef3263e453649,
         type: 3}
@@ -935,7 +934,7 @@ PrefabInstance:
     - target: {fileID: 8313333399145989019, guid: 5ccf56d8747db8449bba38162c1e7861,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ccf56d8747db8449bba38162c1e7861, type: 3}

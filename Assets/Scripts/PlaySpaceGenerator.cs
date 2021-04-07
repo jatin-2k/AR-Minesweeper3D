@@ -15,8 +15,13 @@ public class PlaySpaceGenerator : MonoBehaviour
     public int noiceOffset;
     public bool sphere = false;
 
-    public MinefieldGraph minefield = new MinefieldGraph();
+    public MinefieldGraph minefield;
     #endregion
+
+    private void Awake()
+    {
+        minefield = new MinefieldGraph(chunkSize);
+    }
 
     // Update is called once per frame
     void Update()
@@ -52,7 +57,7 @@ public class PlaySpaceGenerator : MonoBehaviour
                         if (sphere && Vector3.Distance(new Vector3(x, y, z), Vector3.one * radius) > radius)
                             continue;
 
-                        minefield.Add(GameObject.Instantiate(blockPrefab, new Vector3(x,y,z),Quaternion.identity,gameObject.transform)); // add to graph
+                        minefield.Add(GameObject.Instantiate(blockPrefab, new Vector3(x,y,z),Quaternion.identity,gameObject.transform), new Vector3(x,y,z)); // add to graph
                     }
                 }
             }
