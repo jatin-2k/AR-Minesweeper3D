@@ -9,6 +9,8 @@ public class PlaySpaceGenerator : MonoBehaviour
     public GameObject blockPrefab;
 
     public int chunkSize = 50;
+    [Range(0,100)]
+    public int percentageOfMines = 7;
     public float noiseScale = 0.05f;
     [Range(0,1)]
     public float threshold = 0.5f;
@@ -26,13 +28,21 @@ public class PlaySpaceGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //generate new minefield
         if (Input.GetKeyDown(KeyCode.G))
         {
             GeneratePLaySpace();
+            ValidatePlaySpace();
+            SetMinesInPlaySpace();  
+        }
+        //toggle ShowMines
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            GameSettings.ShowMines = !GameSettings.ShowMines;
         }
     }
 
-    #region Methods
+    #region Generation Of Space
     public void GeneratePLaySpace()
     {
         noiseScale = Random.Range(0.01f, 0.5f);
@@ -85,6 +95,19 @@ public class PlaySpaceGenerator : MonoBehaviour
 
         float abc = ab + bc + ac + ba + cb + ca;
         return abc / 6f;
+    }
+    #endregion
+
+    #region After Generation
+    void ValidatePlaySpace()
+    {
+        minefield.Validate();
+    }
+
+    void SetMinesInPlaySpace()
+    {
+        minefield.SetMines(percentageOfMines * minefield.Count / 100);
+        minefield.SetNumberFields();
     }
     #endregion
 }

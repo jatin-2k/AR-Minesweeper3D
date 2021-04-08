@@ -93,7 +93,25 @@ public class MinefieldGraph
         }
     }
 
-    //add edge
+    public void Validate()
+    {
+        int removedNodes = 0;
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                for (int k = 0; k < size; k++)
+                {
+                    if(fields[i,j,k] != null && fields[i,j,k].neighbors.Count == 0)
+                    {
+                        RemoveNode(i, j, k);
+                        removedNodes++;
+                    }
+                }
+            }
+        }
+        Debug.Log("Removed: " + removedNodes + " Indivisual Fields.");
+    }
 
     bool RemoveNode(int x, int y, int z)
     {
@@ -108,6 +126,110 @@ public class MinefieldGraph
             fields[x, y, z] = null;
             countFields--;
             return true;
+        }
+    }
+
+    bool RemoveNode(FieldNode field)
+    {
+        if (field == null)
+        {
+            return false;
+        }
+        else
+        {
+            for(int i = 0; i<size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    for (int k = 0; k < size; k++)
+                    {
+                        if(fields[i,j,k] == field)
+                        {
+                            fields[i, j, k].RemoveAllNeighbors();
+                            Object.Destroy(fields[i,j,k].block);
+                            fields[i, j, k] = null;
+                        }
+                    }
+                }
+            }
+            countFields--;
+            return true;
+        }
+    }
+
+    public void SetMines(int numberOfMines)
+    {
+        for(int i = numberOfMines; i>0; )
+        {
+            if(SetMineAt(Random.Range(0, size), Random.Range(0, size), Random.Range(0, size)))
+            {
+                i--;
+            }
+        }
+        Debug.Log("Mines in Place: " + numberOfMines);
+    }
+
+    private bool SetMineAt(int x, int y, int z)
+    {
+        if(fields[x,y,z] == null || fields[x,y,z].Type == BlockType.Mine)
+        {
+            return false;
+        }
+        else
+        {
+            fields[x, y, z].Type = BlockType.Mine;
+
+            if(GameSettings.ShowMines == true)
+            fields[x, y, z].block.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/MineTesting_Mat");
+
+            return true;
+        }
+    }
+
+    public void SetNumberFields()
+    {
+        foreach(FieldNode field in fields)
+        {
+            if(field != null && field.Type == BlockType.Number)
+            {
+                field.AssignNumber();
+            }
+        }
+    }
+
+    public void ShowMines()
+    {
+        if (GameSettings.ShowMines == true)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    for (int k = 0; k < size; k++)
+                    {
+                        if(fields[i, j, k] != null && fields[i, j, k].Type == BlockType.Mine)
+                        fields[i, j, k].block.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/MineTesting_Mat");
+                    }
+                }
+            }
+        }
+    }
+
+    public void HideMines()
+    {
+        if (GameSettings.ShowMines == false)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    for (int k = 0; k < size; k++)
+                    {
+                        if (fields[i, j, k] != null)
+                            fields[i, j, k].block.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/TileBox_Mat");
+                    }
+                }
+            }
         }
     }
     #endregion
