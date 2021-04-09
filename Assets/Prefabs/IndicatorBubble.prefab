@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 8313333399145989023}
   - component: {fileID: 8313333399145989020}
   - component: {fileID: 8313333399145989021}
+  - component: {fileID: -3958808162730659815}
   m_Layer: 0
   m_Name: IndicatorBubble
   m_TagString: Untagged
@@ -206,6 +207,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-3958808162730659815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8313333399145989019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb7296912275534898a6f8df2077fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bubbleText: {fileID: 8313333400193911169}
 --- !u!1 &8313333400193911183
 GameObject:
   m_ObjectHideFlags: 0

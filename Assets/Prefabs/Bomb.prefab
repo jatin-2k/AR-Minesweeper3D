@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1100911977614902706}
   - component: {fileID: 291864471461551887}
+  - component: {fileID: 6787053588732468023}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -53,6 +54,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6787053588732468023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291864471461551880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcc92bcbc1306d49ada1fda6aec12a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionTimeAfter: 2
+  explosionPrefab: {fileID: 5254318699758440749, guid: 946a6cd9529b62348b38a77eaaa96d22,
+    type: 3}
 --- !u!1 &2327012174530581007
 GameObject:
   m_ObjectHideFlags: 0

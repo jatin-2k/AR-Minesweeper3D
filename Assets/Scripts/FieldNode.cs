@@ -8,6 +8,7 @@ public class FieldNode
     public List<FieldNode> neighbors;
     private FieldBlock fieldBlock;
 
+    #region Properties
     public BlockType Type
     {
         get { return fieldBlock.Type; }
@@ -24,16 +25,21 @@ public class FieldNode
         }
     }
 
+    public Vector3Int PositionInGraph
+    {
+        get { return fieldBlock.PositionInGraph; }
+        set { fieldBlock.PositionInGraph = value; }
+    }
+
     public int NearbyMineCount
     {
         get { return fieldBlock.NearbyMineCount; }
-        set
-        {
-            fieldBlock.NearbyMineCount = value;
-        }
+        set { fieldBlock.NearbyMineCount = value; }
     }
+    #endregion
 
-    public FieldNode(GameObject block)
+    #region Methods
+    public FieldNode(GameObject block, Vector3Int pos)
     {
         this.block = block;
         neighbors = new List<FieldNode>();
@@ -42,6 +48,7 @@ public class FieldNode
             this.block.AddComponent<FieldBlock>();
         }
         fieldBlock = this.block.GetComponent<FieldBlock>();
+        PositionInGraph = pos;
     }
 
     public bool AddNeighbour(FieldNode neighbor)
@@ -92,5 +99,5 @@ public class FieldNode
             return true;
         }
     }
-
+    #endregion
 }

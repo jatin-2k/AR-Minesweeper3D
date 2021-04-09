@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2009462707321383174}
   m_Layer: 0
   m_Name: TileBox
-  m_TagString: Untagged
+  m_TagString: Field
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

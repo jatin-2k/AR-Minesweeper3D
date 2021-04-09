@@ -7,6 +7,8 @@ public class PlaySpaceGenerator : MonoBehaviour
 {
     #region Fields
     public GameObject blockPrefab;
+    public GameObject MinePrefab;
+    public GameObject NumberPrefab;
 
     public int chunkSize = 50;
     [Range(0,100)]
@@ -22,7 +24,7 @@ public class PlaySpaceGenerator : MonoBehaviour
 
     private void Awake()
     {
-        minefield = new MinefieldGraph(chunkSize);
+        minefield = new MinefieldGraph(chunkSize, this);
     }
 
     // Update is called once per frame
@@ -31,19 +33,54 @@ public class PlaySpaceGenerator : MonoBehaviour
         //generate new minefield
         if (Input.GetKeyDown(KeyCode.G))
         {
-            GeneratePLaySpace();
-            ValidatePlaySpace();
-            SetMinesInPlaySpace();  
+            GeneratePlaySpace();
         }
         //toggle ShowMines
         if (Input.GetKeyDown(KeyCode.S))
         {
-            GameSettings.ShowMines = !GameSettings.ShowMines;
+            ToggleShowMines();
+        }
+
+        if(Input.touchCount>0 && (Input.GetTouch(0).phase == TouchPhase.Began))
+        {
+            Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            RaycastHit raycastHit;
+            if (Physics.Raycast(raycast, out raycastHit))
+            {
+                if (raycastHit.collider.CompareTag("Field"))
+                {
+                    minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
+                }
+            }
+        }
+        else if (Input.GetMouseButton(0))
+        {
+            Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (Physics.Raycast(raycast, out raycastHit))
+            {
+                if (raycastHit.collider.CompareTag("Field"))
+                {
+                    minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
+                }
+            }
         }
     }
 
+    public void GeneratePlaySpace()
+    {
+        BegainGeneration();
+        ValidatePlaySpace();
+        SetMinesInPlaySpace();
+    }
+
+    public void ToggleShowMines()
+    {
+        GameSettings.ShowMines = !GameSettings.ShowMines;
+    }
+
     #region Generation Of Space
-    public void GeneratePLaySpace()
+    public void BegainGeneration()
     {
         noiseScale = Random.Range(0.01f, 0.5f);
         noiceOffset = Random.Range(0, 10);
@@ -76,7 +113,7 @@ public class PlaySpaceGenerator : MonoBehaviour
 
         if(minefield.Count <= chunkSize * chunkSize * chunkSize / 4) // count number of nodes in graph
         {
-            GeneratePLaySpace();
+            BegainGeneration();
         }
         else
             Debug.Log("Loaded in: " + (Time.realtimeSinceStartup - startTime) + " Seconds. " + minefield.Count);

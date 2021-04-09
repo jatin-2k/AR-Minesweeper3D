@@ -8,6 +8,7 @@ public class MinefieldGraph
     FieldNode[,,] fields;
     int size;
     int countFields = 0;
+    PlaySpaceGenerator theGenerator;
     #endregion
 
     #region Properties
@@ -21,6 +22,12 @@ public class MinefieldGraph
     #endregion
 
     #region Constructors
+    public MinefieldGraph(int chunksize, PlaySpaceGenerator generator)
+    {
+        size = chunksize;
+        fields = new FieldNode[size, size, size];
+        theGenerator = generator;
+    }
     public MinefieldGraph(int chunksize)
     {
         size = chunksize;
@@ -42,6 +49,13 @@ public class MinefieldGraph
 
         System.Array.Clear(fields, 0, fields.Length);
         countFields = 0;
+
+        traversed.Clear();
+        iteration = 0;
+        for(int i = GameObject.FindObjectOfType<PlaySpaceGenerator>().transform.childCount; i> 0; i--)
+        {
+            Object.Destroy(GameObject.FindObjectOfType<PlaySpaceGenerator>().transform.GetChild(i-1).gameObject);
+        }
     }
 
     public bool Add(GameObject block, Vector3 pos)
@@ -52,7 +66,7 @@ public class MinefieldGraph
         }
         else
         {
-            fields[(int)pos.x, (int)pos.y, (int)pos.z] = new FieldNode(block);
+            fields[(int)pos.x, (int)pos.y, (int)pos.z] = new FieldNode(block, new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z));
             //local method
             bool inbound(float i)
             {
@@ -113,7 +127,7 @@ public class MinefieldGraph
         Debug.Log("Removed: " + removedNodes + " Indivisual Fields.");
     }
 
-    bool RemoveNode(int x, int y, int z)
+    public bool RemoveNode(int x, int y, int z)
     {
         if(fields[x,y,z] == null)
         {
@@ -129,7 +143,7 @@ public class MinefieldGraph
         }
     }
 
-    bool RemoveNode(FieldNode field)
+    public bool RemoveNode(FieldNode field)
     {
         if (field == null)
         {
@@ -232,5 +246,61 @@ public class MinefieldGraph
             }
         }
     }
+    #endregion
+
+    #region Playing Functionality
+    public void FieldClicked(Vector3Int blockpos, bool DetonateIfMine = true)
+    {
+        bool inbound(Vector3Int pos)
+        {
+            return
+                pos.x >= 0 && pos.x < size &&
+                pos.y >= 0 && pos.y < size &&
+                pos.z >= 0 && pos.z < size;
+        }
+        if (inbound(blockpos) && fields[blockpos.x, blockpos.y, blockpos.z] != null)
+        switch(fields[blockpos.x, blockpos.y, blockpos.z].Type)
+        {
+            case BlockType.Mine:
+                if (DetonateIfMine)
+                {
+                    RemoveNode(blockpos.x, blockpos.y, blockpos.z);
+                    Object.Instantiate(theGenerator.MinePrefab, new Vector3(blockpos.x, blockpos.y, blockpos.z), Quaternion.identity, theGenerator.transform);
+                }
+                break;
+            case BlockType.Number:
+                int i = fields[blockpos.x, blockpos.y, blockpos.z].NearbyMineCount;
+                RemoveNode(blockpos.x, blockpos.y, blockpos.z);
+                GameObject bubble = Object.Instantiate(theGenerator.NumberPrefab, new Vector3(blockpos.x, blockpos.y, blockpos.z), Quaternion.identity, theGenerator.transform);
+                bubble.GetComponent<BubbleBehavior>().SetNumber(i);
+                break;
+            case BlockType.Empty:
+                RemoveNode(blockpos.x, blockpos.y, blockpos.z);
+                BreadthFirstSearch(blockpos);
+                break;
+        }
+
+    }
+
+    List<Vector3Int> traversed = new List<Vector3Int>();
+    int iteration = 0;
+    private void BreadthFirstSearch(Vector3Int blockpos)
+    {
+        iteration++;
+        traversed.Add(blockpos);
+        for( int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++)
+        for (int k = -1; k <= 1; k++)
+        {
+            if (traversed.Contains(blockpos + new Vector3Int(i, j, k)) || (i == 0 && j == 0 && k == 0) || fields[blockpos.x + i,blockpos.y + j,blockpos.z + k] == null) continue;
+            else
+            {
+                FieldClicked(blockpos + new Vector3Int(i, j, k), false);
+            }
+        }
+        iteration--;
+        if (iteration == 0) traversed.Clear();
+    }
+
     #endregion
 }

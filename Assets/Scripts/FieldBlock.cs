@@ -8,11 +8,21 @@ public class FieldBlock : MonoBehaviour
     private BlockType type = BlockType.Empty;
     [SerializeField]
     private int nearbyMineCount = 0;
+    private Vector3Int positionInGraph;
 
     public BlockType Type
     {
         get { return type; }
         set { type = value; }
+    }
+
+    public Vector3Int PositionInGraph
+    {
+        get { return positionInGraph; }
+        set
+        {
+            positionInGraph = value;
+        }
     }
 
     public int NearbyMineCount
@@ -31,16 +41,6 @@ public class FieldBlock : MonoBehaviour
         }
     } 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
 }
