@@ -8,10 +8,7 @@ public class Testing : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        graph = new MinefieldGraph(3);
-        graph.Add(new GameObject("object to test"), new Vector3(1, 1, 1));
-        graph.Validate();
-        Debug.Log(graph.Count + " ");
+        graph = FindObjectOfType<PlaySpaceGenerator>().minefield;
         /*foreach(FieldNode field in graph.fields)
         {
             if(field != null)
@@ -27,7 +24,7 @@ public class Testing : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.L))
         {
-            Debug.Log(this.transform.position);
+            Debug.Log(graph.Count + " " + graph.isGameWon);
         }
     }
 }

@@ -9,84 +9,106 @@ public class GameManager : MonoBehaviour {
 	public static GameManager gm;
 
 	// public variables
-	public int score=0;
+	public PlaySpaceGenerator playSpace;
 
-	public bool canBeatLevel = false;
-	public int beatLevelScore=0;
-
-	public float startTime=5.0f;
-	
-	public Text mainScoreDisplay;
-	public Text mainTimerDisplay;
-
-	public GameObject gameOverScoreOutline;
+	public GameObject UiCanvas;
+	public GameObject gameOver;
+	public GameObject gameWon;
 
 	public AudioSource musicAudioSource;
 
 	public bool gameIsOver = false;
+	public bool isGameStarted = false;
 
-	public GameObject playAgainButtons;
 	public string playAgainLevelToLoad;
-
-	public GameObject nextLevelButtons;
 	public string nextLevelToLoad;
 
-	private float currentTime;
 
 	// setup the game
 	void Start () {
-
-		// set the current time to the startTime specified
-		currentTime = startTime;
 
 		// get a reference to the GameManager component for use by other scripts
 		if (gm == null) 
 			gm = this.gameObject.GetComponent<GameManager>();
 
 		// init scoreboard to 0
-		mainScoreDisplay.text = "0";
 
 		// inactivate the gameOverScoreOutline gameObject, if it is set
-		if (gameOverScoreOutline)
-			gameOverScoreOutline.SetActive (false);
+		if (UiCanvas)
+			UiCanvas.SetActive (false);
 
 		// inactivate the playAgainButtons gameObject, if it is set
-		if (playAgainButtons)
-			playAgainButtons.SetActive (false);
+		if (gameOver)
+			gameOver.SetActive (false);
 
 		// inactivate the nextLevelButtons gameObject, if it is set
-		if (nextLevelButtons)
-			nextLevelButtons.SetActive (false);
+		if (gameWon)
+			gameWon.SetActive (false);
 	}
 
 	// this is the main game event loop
 	void Update () {
-		if (!gameIsOver) {
-			if (canBeatLevel && (score >= beatLevelScore)) {  // check to see if beat game
+		//generate new minefield
+		if (Input.GetKeyDown(KeyCode.G))
+		{
+			playSpace.GeneratePlaySpace();
+			isGameStarted = true;
+		}
+		//toggle ShowMines
+		if (Input.GetKeyDown(KeyCode.S))
+		{
+			playSpace.ToggleShowMines();
+		}
+
+		if (!gameIsOver && isGameStarted) {
+			if (playSpace.minefield.isGameWon) {  // check to see if beat game
 				BeatLevel ();
-			} else if (currentTime < 0) { // check to see if timer has run out
+			} 
+			else if (playSpace.minefield.isGameLost) { // check to see if timer has run out
 				EndGame ();
-			} else { // game playing state, so update the timer
-				currentTime -= Time.deltaTime;
-				mainTimerDisplay.text = currentTime.ToString ("0.00");				
+			}
+            else
+            {
+				//game is in playing state here
+				if (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Began)) // for touch Input
+				{
+					Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+					RaycastHit raycastHit;
+					if (Physics.Raycast(raycast, out raycastHit))
+					{
+						if (raycastHit.collider.CompareTag("Field"))
+						{
+							playSpace.minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
+						}
+					}
+				}
+				else if (Input.GetMouseButton(0)) // for mouse input
+				{
+					Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+					RaycastHit raycastHit;
+					if (Physics.Raycast(raycast, out raycastHit))
+					{
+						if (raycastHit.collider.CompareTag("Field"))
+						{
+							playSpace.minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
+						}
+					}
+				}
 			}
 		}
 	}
 
-	void EndGame() {
+	public void EndGame() {
 		// game is over
 		gameIsOver = true;
 
-		// repurpose the timer to display a message to the player
-		mainTimerDisplay.text = "GAME OVER";
-
 		// activate the gameOverScoreOutline gameObject, if it is set 
-		if (gameOverScoreOutline)
-			gameOverScoreOutline.SetActive (true);
+		if (UiCanvas)
+			UiCanvas.SetActive (true);
 	
 		// activate the playAgainButtons gameObject, if it is set 
-		if (playAgainButtons)
-			playAgainButtons.SetActive (true);
+		if (gameOver)
+			gameOver.SetActive (true);
 
 		// reduce the pitch of the background music, if it is set 
 		if (musicAudioSource)
@@ -97,39 +119,19 @@ public class GameManager : MonoBehaviour {
 		// game is over
 		gameIsOver = true;
 
-		// repurpose the timer to display a message to the player
-		mainTimerDisplay.text = "LEVEL COMPLETE";
-
 		// activate the gameOverScoreOutline gameObject, if it is set 
-		if (gameOverScoreOutline)
-			gameOverScoreOutline.SetActive (true);
+		if (UiCanvas)
+			UiCanvas.SetActive (true);
 
 		// activate the nextLevelButtons gameObject, if it is set 
-		if (nextLevelButtons)
-			nextLevelButtons.SetActive (true);
+		if (gameWon)
+			gameWon.SetActive (true);
 		
 		// reduce the pitch of the background music, if it is set 
 		if (musicAudioSource)
 			musicAudioSource.pitch = 0.5f; // slow down the music
 	}
 
-	// public function that can be called to update the score or time
-	public void targetHit (int scoreAmount, float timeAmount)
-	{
-		// increase the score by the scoreAmount and update the text UI
-		score += scoreAmount;
-		mainScoreDisplay.text = score.ToString ();
-		
-		// increase the time by the timeAmount
-		currentTime += timeAmount;
-		
-		// don't let it go negative
-		if (currentTime < 0)
-			currentTime = 0.0f;
-
-		// update the text UI
-		mainTimerDisplay.text = currentTime.ToString ("0.00");
-	}
 
 	// public function that can be called to restart the game
 	public void RestartGame ()

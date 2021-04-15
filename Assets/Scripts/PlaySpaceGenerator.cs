@@ -9,6 +9,7 @@ public class PlaySpaceGenerator : MonoBehaviour
     public GameObject blockPrefab;
     public GameObject MinePrefab;
     public GameObject NumberPrefab;
+    public GameObject Offset;
 
     public int chunkSize = 50;
     [Range(0,100)]
@@ -25,47 +26,9 @@ public class PlaySpaceGenerator : MonoBehaviour
     private void Awake()
     {
         minefield = new MinefieldGraph(chunkSize, this);
+        if(Offset == null) { Offset = this.gameObject; }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //generate new minefield
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            GeneratePlaySpace();
-        }
-        //toggle ShowMines
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            ToggleShowMines();
-        }
-
-        if(Input.touchCount>0 && (Input.GetTouch(0).phase == TouchPhase.Began))
-        {
-            Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit raycastHit;
-            if (Physics.Raycast(raycast, out raycastHit))
-            {
-                if (raycastHit.collider.CompareTag("Field"))
-                {
-                    minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
-                }
-            }
-        }
-        else if (Input.GetMouseButton(0))
-        {
-            Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit raycastHit;
-            if (Physics.Raycast(raycast, out raycastHit))
-            {
-                if (raycastHit.collider.CompareTag("Field"))
-                {
-                    minefield.FieldClicked(raycastHit.collider.gameObject.GetComponent<FieldBlock>().PositionInGraph);
-                }
-            }
-        }
-    }
 
     public void GeneratePlaySpace()
     {
@@ -104,7 +67,7 @@ public class PlaySpaceGenerator : MonoBehaviour
                         if (sphere && Vector3.Distance(new Vector3(x, y, z), Vector3.one * radius) > radius)
                             continue;
 
-                        minefield.Add(GameObject.Instantiate(blockPrefab, new Vector3(x,y,z),Quaternion.identity,gameObject.transform), new Vector3(x,y,z)); // add to graph
+                        minefield.Add(GameObject.Instantiate(blockPrefab, Offset.transform.position + new Vector3(x,y,z),Offset.transform.rotation,gameObject.transform), new Vector3(x,y,z)); // add to graph
                     }
                 }
             }

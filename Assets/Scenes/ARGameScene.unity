@@ -477,7 +477,7 @@ MonoBehaviour:
   NumberPrefab: {fileID: 8313333399145989019, guid: 5ccf56d8747db8449bba38162c1e7861,
     type: 3}
   Offset: {fileID: 0}
-  chunkSize: 5
+  chunkSize: 10
   percentageOfMines: 7
   noiseScale: 0.1
   threshold: 0.5

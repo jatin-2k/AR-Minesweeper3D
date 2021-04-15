@@ -8,6 +8,7 @@ public class MinefieldGraph
     FieldNode[,,] fields;
     int size;
     int countFields = 0;
+    int numberOfMines = 0;
     PlaySpaceGenerator theGenerator;
     #endregion
 
@@ -19,6 +20,20 @@ public class MinefieldGraph
             return countFields;
         }
     }
+
+    public bool isGameWon
+    {
+        get
+        {
+            return Count <= numberOfMines;
+        }
+    }
+
+    public bool isGameLost
+    {
+        get;
+        set;
+    } = false;
     #endregion
 
     #region Constructors
@@ -173,6 +188,7 @@ public class MinefieldGraph
 
     public void SetMines(int numberOfMines)
     {
+        this.numberOfMines = numberOfMines;
         for(int i = numberOfMines; i>0; )
         {
             if(SetMineAt(Random.Range(0, size), Random.Range(0, size), Random.Range(0, size)))
@@ -266,6 +282,7 @@ public class MinefieldGraph
                 {
                     RemoveNode(blockpos.x, blockpos.y, blockpos.z);
                     Object.Instantiate(theGenerator.MinePrefab, new Vector3(blockpos.x, blockpos.y, blockpos.z), Quaternion.identity, theGenerator.transform);
+                    isGameLost = true;
                 }
                 break;
             case BlockType.Number:
@@ -286,13 +303,24 @@ public class MinefieldGraph
     int iteration = 0;
     private void BreadthFirstSearch(Vector3Int blockpos)
     {
+        bool inbound(Vector3Int pos)
+        {
+            return
+                pos.x >= 0 && pos.x < size &&
+                pos.y >= 0 && pos.y < size &&
+                pos.z >= 0 && pos.z < size;
+        }
         iteration++;
         traversed.Add(blockpos);
         for( int i = -1; i <= 1; i++)
         for (int j = -1; j <= 1; j++)
         for (int k = -1; k <= 1; k++)
         {
-            if (traversed.Contains(blockpos + new Vector3Int(i, j, k)) || (i == 0 && j == 0 && k == 0) || fields[blockpos.x + i,blockpos.y + j,blockpos.z + k] == null) continue;
+            if (traversed.Contains(blockpos + new Vector3Int(i, j, k)) || 
+                (i == 0 && j == 0 && k == 0) ||
+                !inbound(blockpos + new Vector3Int(i, j, k)) ||
+                fields[blockpos.x + i, blockpos.y + j, blockpos.z + k] == null) 
+                        continue;
             else
             {
                 FieldClicked(blockpos + new Vector3Int(i, j, k), false);
