@@ -281,14 +281,14 @@ public class MinefieldGraph
                 if (DetonateIfMine)
                 {
                     RemoveNode(blockpos.x, blockpos.y, blockpos.z);
-                    Object.Instantiate(theGenerator.MinePrefab, new Vector3(blockpos.x, blockpos.y, blockpos.z), Quaternion.identity, theGenerator.transform);
+                    Object.Instantiate(theGenerator.MinePrefab, theGenerator.transform.TransformPoint(theGenerator.Offset.transform.localPosition + new Vector3(blockpos.x, blockpos.y, blockpos.z)), Quaternion.identity, theGenerator.transform);
                     isGameLost = true;
                 }
                 break;
             case BlockType.Number:
                 int i = fields[blockpos.x, blockpos.y, blockpos.z].NearbyMineCount;
                 RemoveNode(blockpos.x, blockpos.y, blockpos.z);
-                GameObject bubble = Object.Instantiate(theGenerator.NumberPrefab, new Vector3(blockpos.x, blockpos.y, blockpos.z), Quaternion.identity, theGenerator.transform);
+                GameObject bubble = Object.Instantiate(theGenerator.NumberPrefab, theGenerator.transform.TransformPoint(theGenerator.Offset.transform.localPosition + new Vector3(blockpos.x, blockpos.y, blockpos.z)), Quaternion.identity, theGenerator.transform);
                 bubble.GetComponent<BubbleBehavior>().SetNumber(i);
                 break;
             case BlockType.Empty:

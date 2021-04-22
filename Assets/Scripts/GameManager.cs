@@ -51,13 +51,12 @@ public class GameManager : MonoBehaviour {
 		//generate new minefield
 		if (Input.GetKeyDown(KeyCode.G))
 		{
-			playSpace.GeneratePlaySpace();
-			isGameStarted = true;
+			GeneratePlaySpace();
 		}
 		//toggle ShowMines
 		if (Input.GetKeyDown(KeyCode.S))
 		{
-			playSpace.ToggleShowMines();
+			ToggleShowMines();
 		}
 
 		if (!gameIsOver && isGameStarted) {
@@ -82,7 +81,7 @@ public class GameManager : MonoBehaviour {
 						}
 					}
 				}
-				else if (Input.GetMouseButton(0)) // for mouse input
+				else if (Input.GetMouseButtonDown(0)) // for mouse input
 				{
 					Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
 					RaycastHit raycastHit;
@@ -96,6 +95,17 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	public void GeneratePlaySpace()
+    {
+		playSpace.GeneratePlaySpace();
+		isGameStarted = true;
+	}
+
+	public void ToggleShowMines()
+    {
+		playSpace.ToggleShowMines();
 	}
 
 	public void EndGame() {

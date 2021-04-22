@@ -67,7 +67,7 @@ public class PlaySpaceGenerator : MonoBehaviour
                         if (sphere && Vector3.Distance(new Vector3(x, y, z), Vector3.one * radius) > radius)
                             continue;
 
-                        minefield.Add(GameObject.Instantiate(blockPrefab, Offset.transform.position + new Vector3(x,y,z),Offset.transform.rotation,gameObject.transform), new Vector3(x,y,z)); // add to graph
+                        minefield.Add(GameObject.Instantiate(blockPrefab, transform.TransformPoint(Offset.transform.localPosition + new Vector3(x, y, z)) ,Offset.transform.rotation,gameObject.transform), new Vector3(x,y,z)); // add to graph
                     }
                 }
             }
